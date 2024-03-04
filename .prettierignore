@@ -1,0 +1,10 @@
+node_modules
+vendor
+android
+ios
+
+*.json
+*.svg
+*.png
+*config.js
+
