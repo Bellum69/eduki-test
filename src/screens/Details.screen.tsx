@@ -1,9 +1,12 @@
 import { RouteProp } from '@react-navigation/native';
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { getItem } from '../api';
+import { LoadingIndicator } from '../components/LoadingIndicator';
 import { Routes } from '../navigation/routes';
 import { RootStackParamList } from '../navigation/types';
+import { ResponseItem } from '../types';
 
 type DetailsScreenRouteProp = RouteProp<RootStackParamList, Routes.Details>;
 
@@ -12,18 +15,43 @@ type Props = {
 };
 
 export const DetailsScreen: FC<Props> = ({ route }) => {
-  const { item } = route.params;
+  const { id } = route.params;
+
+  const [item, setItem] = useState<ResponseItem | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const loadItem = async (id) => {
+    setLoading(true);
+    try {
+      const responseItem = await getItem(id);
+      setItem(responseItem);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadItem(id);
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.screenWrap}>
       <View style={styles.container}>
-        <Image source={{ uri: item.firstPreviewImage.watermarked }} style={styles.image} />
-        <View style={styles.detailContainer}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.author}>{item.author.details.publicName}</Text>
-          <Text style={styles.price}>{`${item.price} €`}</Text>
-          <Text style={styles.description}>{item.description}</Text>
-        </View>
+        {!loading && item ? (
+          <>
+            <Image source={{ uri: item.firstPreviewImage.watermarked }} style={styles.image} />
+            <View style={styles.detailContainer}>
+              <Text style={styles.title}>{item.title}</Text>
+              <Text style={styles.author}>{item.author.details.publicName}</Text>
+              <Text style={styles.price}>{`${item.price} €`}</Text>
+              <Text style={styles.description}>{item.description}</Text>
+            </View>
+          </>
+        ) : (
+          <LoadingIndicator />
+        )}
       </View>
     </ScrollView>
   );

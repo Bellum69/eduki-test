@@ -16,6 +16,10 @@ AvDkfvSA-HiX1xOCGmfQDXoGNrRR706bs7wlpqIbNF7lZZFjocfmiODif3rPj0QWf2amlSuCmlZzkyCo
 L9SuXgADlI-2QR1hWQ-i7RW2ElUhLt7PDQlEw5y49OLe5nhOMOxaSVRV8sbk5lX9CS28cJBezbg0ArLgFO
 v1nH88VNBZQKdM`;
 
+const headers = {
+  Authorization: `Bearer ${token}`,
+};
+
 export const searchItems = async (q: string, p: number): Promise<ResponseItem[]> => {
   const response = await axios.get('https://api.eduki.com/api/v1/elastic', {
     params: {
@@ -24,9 +28,15 @@ export const searchItems = async (q: string, p: number): Promise<ResponseItem[]>
       p,
       world: 'de',
     },
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers,
   });
   return response.data.data.items.materials;
+};
+
+export const getItem = async (id: string): Promise<ResponseItem> => {
+  const response = await axios.get(`https://api.eduki.com/api/v1/materials/${id}?world=de`, {
+    headers,
+  });
+
+  return response.data.data.items[0];
 };

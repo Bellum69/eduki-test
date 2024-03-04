@@ -11,6 +11,7 @@ interface Author {
 }
 
 export interface ResponseItem {
+  id: number | string;
   firstPreviewImage: FirstPreviewImage;
   title: string;
   description: string;

@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import debounce from 'lodash.debounce';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, TextInput, View } from 'react-native';
 
 import { searchItems } from '../api';
@@ -38,9 +38,12 @@ export const SearchScreen = () => {
     }
   };
 
-  const debouncedLoadItems = debounce((q, p) => {
-    loadItems(q, p);
-  }, 300);
+  const debouncedLoadItems = useCallback(
+    debounce((q, p) => {
+      loadItems(q, p);
+    }, 500),
+    [],
+  );
 
   useEffect(() => {
     debouncedLoadItems(query, page);
@@ -59,7 +62,7 @@ export const SearchScreen = () => {
   };
 
   const navigateToDetails = (item: ResponseItem) => {
-    navigation.navigate(Routes.Details, { item });
+    navigation.navigate(Routes.Details, { id: item.id });
   };
 
   return (
